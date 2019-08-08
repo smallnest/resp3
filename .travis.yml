@@ -1,0 +1,25 @@
+language: go
+
+
+go:
+  - tip
+  - 1.10.x
+  - 1.12.x
+
+env:
+
+before_script:
+  - rm -f go.sum
+  - curl -fL https://getgoc.gocenter.io | sh
+  - ./goc get -v github.com/smallnest/resp3
+  - go get github.com/mattn/goveralls
+
+script:
+ - go test -v ./...
+ - goveralls -service=travis-ci
+
+notifications:
+  email:
+    recipients: smallnest@gmail.com
+    on_success: change
+    on_failure: always

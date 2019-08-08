@@ -71,7 +71,7 @@ type Value struct {
 
 // SmartResult converts itself to a real object.
 // Attributes are dropped.
-// simple objects are coverted their Go types.
+// simple objects are converted their Go types.
 // String -> go string
 // Interger -> go int64
 // Double -> go float64
