@@ -69,6 +69,61 @@ type Value struct {
 	StreamMarker string
 }
 
+// SmartResult converts itself to a real object.
+// Attributes are dropped.
+// simple objects are coverted their Go types.
+// String -> go string
+// Interger -> go int64
+// Double -> go float64
+// Boolean -> go bool
+// Err -> go string
+// BigInt -> big.Int
+// Array -> go array
+// Map --> github.com/emirpasic/gods/maps/linkedhashmap.Map
+// Set -> go array
+// Push -> go array
+// NULL -> nil
+func (r *Value) SmartResult() interface{} {
+	switch r.Type {
+	case TypeSimpleString:
+		return r.Str
+	case TypeBlobString:
+		return r.Str
+	case TypeVerbatimString:
+		return r.Str
+	case TypeSimpleError:
+		return r.Err
+	case TypeBlobError:
+		return r.Err
+	case TypeNumber:
+		return r.Integer
+	case TypeDouble:
+		return r.Double
+	case TypeBigNumber:
+		return r.BigInt
+	case TypeNull:
+		return nil
+	case TypeBoolean:
+		return r.Boolean
+	case TypeArray, TypeSet, TypePush:
+		var rt []interface{}
+		for _, elem := range r.Elems {
+			rt = append(rt, elem.SmartResult())
+		}
+		return rt
+	case TypeMap:
+		var rt = linkedhashmap.New()
+		if r.KV != nil {
+			r.KV.Each(func(k, v interface{}) {
+				rt.Put(k.(*Value).SmartResult(), v.(*Value).SmartResult())
+			})
+		}
+		return rt
+	}
+
+	return nil
+}
+
 // ToRESP3String converts this value to redis RESP3 string.
 func (r *Value) ToRESP3String() string {
 	buf := new(strings.Builder)
@@ -155,15 +210,16 @@ func (r *Value) toRESP3String(buf *strings.Builder) {
 	case TypeMap:
 		buf.WriteString(strconv.Itoa(r.KV.Size()))
 		buf.Write(CRLFByte)
-
-		r.KV.Each(func(key, val interface{}) {
-			k := key.(*Value)
-			v := val.(*Value)
-			buf.WriteByte(k.Type)
-			k.toRESP3String(buf)
-			buf.WriteByte(v.Type)
-			v.toRESP3String(buf)
-		})
+		if r.KV != nil {
+			r.KV.Each(func(key, val interface{}) {
+				k := key.(*Value)
+				v := val.(*Value)
+				buf.WriteByte(k.Type)
+				k.toRESP3String(buf)
+				buf.WriteByte(v.Type)
+				v.toRESP3String(buf)
+			})
+		}
 		return
 	}
 
