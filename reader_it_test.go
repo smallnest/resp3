@@ -176,24 +176,24 @@ func TestReader_IT_Test(t *testing.T) {
 	}
 	t.Logf("GEORADIUS result: %+v", resp.SmartResult())
 
-	//SUBSCRIBE
-	w.WriteCommand("SUBSCRIBE", "news")
-	resp, _, err = r.ReadValue()
-	if err != nil {
-		t.Fatalf("failed to SUBSCRIBE: %v", err)
-	}
-	t.Logf("SUBSCRIBE result: %+v", resp.SmartResult())
+	// //SUBSCRIBE
+	// w.WriteCommand("SUBSCRIBE", "news")
+	// resp, _, err = r.ReadValue()
+	// if err != nil {
+	// 	t.Fatalf("failed to SUBSCRIBE: %v", err)
+	// }
+	// t.Logf("SUBSCRIBE result: %+v", resp.SmartResult())
 
-	//SUBSCRIBE
-	w.WriteCommand("PUBLISH", "news", "resp3 lib is released")
-	resp, _, err = r.ReadValue()
-	if err != nil {
-		t.Fatalf("failed to PUBLISH: %v", err)
-	}
-	t.Logf("PUBLISH result: %+v", resp.SmartResult())
-	resp, _, err = r.ReadValue()
-	if err != nil {
-		t.Fatalf("failed to receive a message: %v", err)
-	}
-	t.Logf("received SUBSCRIBED result: %+v", resp.SmartResult())
+	// //PUBLISH
+	// w.WriteCommand("PUBLISH", "news", "resp3 lib is released")
+	// resp, _, err = r.ReadValue()
+	// if err != nil {
+	// 	t.Fatalf("failed to PUBLISH: %v", err)
+	// }
+	// t.Logf("PUBLISH result: %+v", resp.SmartResult())
+	// resp, _, err = r.ReadValue()
+	// if err != nil {
+	// 	t.Fatalf("failed to receive a message: %v", err)
+	// }
+	// t.Logf("received SUBSCRIBED result: %+v", resp.SmartResult())
 }

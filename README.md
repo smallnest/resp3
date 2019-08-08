@@ -1,5 +1,7 @@
 # resp3
 
+[![License](https://img.shields.io/:license-apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![GoDoc](https://godoc.org/github.com/smallnest/resp3?status.png)](http://godoc.org/github.com/smallnest/resp3)  [![travis](https://travis-ci.org/smallnest/resp3.svg?branch=master)](https://travis-ci.org/smallnest/resp3) [![Go Report Card](https://goreportcard.com/badge/github.com/smallnest/resp3)](https://goreportcard.com/report/github.com/smallnest/resp3) [![coveralls](https://coveralls.io/repos/smallnest/resp3/badge.svg?branch=master&service=github)](https://coveralls.io/github/smallnest/resp3?branch=master) 
+
 A redis RESP3 protocol library, written in Go.
 
 `Value` represents a redis command or an redis response, which supports all RESP3 types:
