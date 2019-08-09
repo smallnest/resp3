@@ -147,8 +147,9 @@ var crc64_tab = [256]uint64{
 	(0x536fa08fdfd90e51), (0x29b7d047efec8728),
 }
 
-func crc64(data []byte, l uint64) uint64 {
+func crc64(data []byte) uint64 {
 	var crc uint64
+	var l = uint64(len(data))
 	for j := uint64(0); j < l; j++ {
 		b := data[j]
 		crc = crc64_tab[(byte)(crc)^b] ^ (crc >> 8)
