@@ -8,7 +8,7 @@ import (
 )
 
 func TestReader_IT_Test(t *testing.T) {
-	conn, err := net.DialTimeout("tcp", "127.0.0.1:9999", 5*time.Second)
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:6379", 5*time.Second)
 	if err != nil {
 		t.Logf("can't found one of redis 6.0 server")
 		return
@@ -211,7 +211,7 @@ func TestReader_IT_Test(t *testing.T) {
 }
 
 func TestReader_IT_Tracking(t *testing.T) {
-	conn, err := net.DialTimeout("tcp", "127.0.0.1:9999", 5*time.Second)
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:6379", 5*time.Second)
 	if err != nil {
 		t.Logf("can't found one of redis 6.0 server")
 		return
