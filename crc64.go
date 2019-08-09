@@ -156,3 +156,8 @@ func crc64(data []byte) uint64 {
 	}
 	return crc
 }
+
+// Hash with crc64.
+func Hash(data []byte) uint32 {
+	return uint32(crc64(data))
+}

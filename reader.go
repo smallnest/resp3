@@ -8,6 +8,7 @@ import (
 	"math"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/emirpasic/gods/maps/linkedhashmap"
 )
@@ -240,4 +241,11 @@ func (r *Reader) readAttr(line []byte) (*linkedhashmap.Map, error) {
 		rt.Put(k, v)
 	}
 	return rt, nil
+}
+
+// FromString convert a string into a Value.
+func FromString(data string) (*Value, error) {
+	r := NewReader(strings.NewReader(data))
+	v, _, err := r.ReadValue()
+	return v, err
 }
