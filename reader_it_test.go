@@ -36,7 +36,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if helloResp.KV.Size() == 0 {
 		t.Fatalf("expect some info but got %+v", helloResp)
 	}
-	t.Logf("%v", helloResp.SmartResult())
+	t.Logf("%c, %v", helloResp.Type, helloResp.SmartResult())
 
 	// set and get
 	w.WriteCommand("SET", "A", "123")
@@ -62,7 +62,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to INCR")
 	}
-	t.Logf("INCR result: %+v", resp.SmartResult())
+	t.Logf("INCR result: %c, %+v", resp.Type, resp.SmartResult())
 
 	// mget
 	w.WriteCommand("MGET", "A", "B")
@@ -70,7 +70,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to MGET: %v", err)
 	}
-	t.Logf("MGET result: %+v", resp.SmartResult())
+	t.Logf("MGET result: %c, %+v", resp.Type, resp.SmartResult())
 
 	// exists
 	w.WriteCommand("EXISTS", "C")
@@ -78,7 +78,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to EXISTS: %v", err)
 	}
-	t.Logf("EXISTS result: %+v", resp.SmartResult())
+	t.Logf("EXISTS result: %c, %+v", resp.Type, resp.SmartResult())
 
 	// hset
 	w.WriteCommand("HSET", "D", "f1", "123")
@@ -86,7 +86,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to HSET: %v", err)
 	}
-	t.Logf("HSET result: %+v", resp.SmartResult())
+	t.Logf("HSET result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//hgetall
 	w.WriteCommand("HGETALL", "D")
@@ -94,7 +94,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to HGETALL: %v", err)
 	}
-	t.Logf("HGETALL result: %+v", resp.SmartResult())
+	t.Logf("HGETALL result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//PFADD
 	w.WriteCommand("PFADD", "hll", "a", "b", "c", "d", "e", "f", "g")
@@ -102,7 +102,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to PFADD: %v", err)
 	}
-	t.Logf("PFADD result: %+v", resp.SmartResult())
+	t.Logf("PFADD result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//PFCOUNT
 	w.WriteCommand("PFCOUNT", "hll")
@@ -110,7 +110,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to PFCOUNT: %v", err)
 	}
-	t.Logf("PFCOUNT result: %+v", resp.SmartResult())
+	t.Logf("PFCOUNT result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//LPUSH
 	w.WriteCommand("LPUSH", "mylist", "hello", "world")
@@ -118,7 +118,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to LPUSH: %v", err)
 	}
-	t.Logf("LPUSH result: %+v", resp.SmartResult())
+	t.Logf("LPUSH result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//LRANGE
 	w.WriteCommand("LRANGE", "mylist", "0", "-1")
@@ -126,7 +126,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to LRANGE: %v", err)
 	}
-	t.Logf("LRANGE result: %+v", resp.SmartResult())
+	t.Logf("LRANGE result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//SADD
 	w.WriteCommand("SADD", "myset", "hello", "world", "hello")
@@ -134,7 +134,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to SADD: %v", err)
 	}
-	t.Logf("SADD result: %+v", resp.SmartResult())
+	t.Logf("SADD result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//SMEMBERS
 	w.WriteCommand("SMEMBERS", "myset")
@@ -142,7 +142,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to SMEMBERS: %v", err)
 	}
-	t.Logf("SMEMBERS result: %+v", resp.SmartResult())
+	t.Logf("SMEMBERS result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//ZADD
 	w.WriteCommand("ZADD", "myzset", "1", "one")
@@ -150,7 +150,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to ZADD: %v", err)
 	}
-	t.Logf("ZADD result: %+v", resp.SmartResult())
+	t.Logf("ZADD result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//ZRANGE
 	w.WriteCommand("ZRANGE", "myzset", "0", "-1", "WITHSCORES")
@@ -158,7 +158,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to ZRANGE: %v", err)
 	}
-	t.Logf("ZRANGE result: %+v", resp.SmartResult())
+	t.Logf("ZRANGE result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//GEOADD
 	w.WriteCommand("GEOADD", "Sicily", "13.361389", "38.115556", "Palermo", "15.087269", "37.502669", "Catania")
@@ -166,7 +166,7 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to GEOADD: %v", err)
 	}
-	t.Logf("GEOADD result: %+v", resp.SmartResult())
+	t.Logf("GEOADD result: %c, %+v", resp.Type, resp.SmartResult())
 
 	//GEORADIUS
 	w.WriteCommand("GEORADIUS", "Sicily", "15", "37", "100", "km")
@@ -174,26 +174,37 @@ func TestReader_IT_Test(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to GEORADIUS: %v", err)
 	}
-	t.Logf("GEORADIUS result: %+v", resp.SmartResult())
+	t.Logf("GEORADIUS result: %c, %+v", resp.Type, resp.SmartResult())
 
-	// //SUBSCRIBE
-	// w.WriteCommand("SUBSCRIBE", "news")
-	// resp, _, err = r.ReadValue()
-	// if err != nil {
-	// 	t.Fatalf("failed to SUBSCRIBE: %v", err)
-	// }
-	// t.Logf("SUBSCRIBE result: %+v", resp.SmartResult())
+	//SUBSCRIBE
+	w.WriteCommand("SUBSCRIBE", "news")
+	resp, _, err = r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to SUBSCRIBE: %v", err)
+	}
+	t.Logf("SUBSCRIBE result: %c, %+v", resp.Type, resp.SmartResult())
 
-	// //PUBLISH
-	// w.WriteCommand("PUBLISH", "news", "resp3 lib is released")
-	// resp, _, err = r.ReadValue()
-	// if err != nil {
-	// 	t.Fatalf("failed to PUBLISH: %v", err)
-	// }
-	// t.Logf("PUBLISH result: %+v", resp.SmartResult())
-	// resp, _, err = r.ReadValue()
-	// if err != nil {
-	// 	t.Fatalf("failed to receive a message: %v", err)
-	// }
-	// t.Logf("received SUBSCRIBED result: %+v", resp.SmartResult())
+	{
+		conn, err := net.DialTimeout("tcp", "127.0.0.1:9999", 5*time.Second)
+		if err != nil {
+			t.Logf("can't found one of redis 6.0 server")
+			return
+		}
+
+		w := NewWriter(conn)
+		r := NewReader(conn)
+		//PUBLISH
+		w.WriteCommand("PUBLISH", "news", "resp3 lib is released")
+		resp, _, err = r.ReadValue()
+		if err != nil {
+			t.Fatalf("failed to PUBLISH: %v", err)
+		}
+		t.Logf("PUBLISH result: %c, %+v", resp.Type, resp.SmartResult())
+		conn.Close()
+	}
+	resp, _, err = r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to receive a message: %v", err)
+	}
+	t.Logf("received SUBSCRIBED result: %c, %+v", resp.Type, resp.SmartResult())
 }
