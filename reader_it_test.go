@@ -2,6 +2,7 @@ package resp3
 
 import (
 	"net"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -207,4 +208,82 @@ func TestReader_IT_Test(t *testing.T) {
 		t.Fatalf("failed to receive a message: %v", err)
 	}
 	t.Logf("received SUBSCRIBED result: %c, %+v", resp.Type, resp.SmartResult())
+}
+
+func TestReader_IT_Tracking(t *testing.T) {
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:9999", 5*time.Second)
+	if err != nil {
+		t.Logf("can't found one of redis 6.0 server")
+		return
+	}
+	defer conn.Close()
+
+	w := NewWriter(conn)
+	r := NewReader(conn)
+
+	w.WriteCommand("HELLO", "3")
+	helloResp, _, err := r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to send a HELLO 3")
+	}
+	if helloResp.KV.Size() == 0 {
+		t.Fatalf("expect some info but got %+v", helloResp)
+	}
+	t.Logf("hello response: %c, %v", helloResp.Type, helloResp.SmartResult())
+
+	w.WriteCommand("CLIENT", "TRACKING", "on")
+	resp, _, err := r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to TRACKING: %v", err)
+	}
+	t.Logf("TRACKING result: %c, %+v", resp.Type, resp.SmartResult())
+
+	w.WriteCommand("GET", "a")
+	resp, _, err = r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to GET: %v", err)
+	}
+	t.Logf("GET result: %c, %+v", resp.Type, resp.SmartResult())
+
+	go func() {
+		conn, err := net.DialTimeout("tcp", "127.0.0.1:9999", 5*time.Second)
+		if err != nil {
+			t.Logf("can't found one of redis 6.0 server")
+			return
+		}
+		defer conn.Close()
+		w := NewWriter(conn)
+		r := NewReader(conn)
+
+		//  uint64_t hash = crc64(0,(unsigned char*)sdskey,sdslen(sdskey))&(TRACKING_TABLE_SIZE-1);
+		hash := crc64([]byte("a"), 1) & (TRACKING_TABLE_SIZE - 1)
+		t.Logf("calculated hash: %d", hash)
+
+		for i := 0; i < 10; i++ {
+			//PUBLISH
+			w.WriteCommand("set", "a", strconv.Itoa(i))
+			resp, _, err = r.ReadValue()
+			if err != nil {
+				t.Fatalf("failed to set: %v", err)
+			}
+			t.Logf("set result: %c, %+v", resp.Type, resp.SmartResult())
+			time.Sleep(200 * time.Millisecond)
+		}
+
+	}()
+
+	for i := 0; i < 10; i++ {
+		resp, _, err = r.ReadValue()
+		if err != nil {
+			t.Fatalf("failed to receive a message: %v", err)
+		}
+		if resp.Type == TypePush && len(resp.Elems) >= 2 && resp.Elems[0].SmartResult().(string) == "invalidate" {
+			t.Logf("received TRACKING result: %c, %+v", resp.Type, resp.SmartResult())
+
+			// refresh cache "a"
+			w.WriteCommand("GET", "a")
+			resp, _, err = r.ReadValue()
+		}
+	}
+
 }
