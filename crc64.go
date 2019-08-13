@@ -159,5 +159,5 @@ func crc64(data []byte) uint64 {
 
 // Hash with crc64.
 func Hash(data []byte) uint32 {
-	return uint32(crc64(data))
+	return uint32(crc64(data) & (TRACKING_TABLE_SIZE - 1))
 }
