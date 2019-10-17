@@ -15,7 +15,9 @@ import (
 
 // Errors
 var (
-	ErrInvalidSyntax = errors.New("resp: invalid syntax")
+	ErrInvalidSyntax      = errors.New("resp: invalid syntax")
+	ErrStreamingUnsupport = errors.New("resp: unsupported streaming")
+	ErrUnknown            = errors.New("resp: unknown")
 )
 
 // Reader is reader to parse responses/requests from the underlying reader.
