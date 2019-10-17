@@ -24,7 +24,7 @@ func NewWriter(writer io.Writer) *Writer {
 	}
 }
 
-// WriteCommand write a redis command.
+// WriteCommand writes a redis command.
 func (w *Writer) WriteCommand(args ...string) (err error) {
 	// write the array flag
 	w.WriteByte(TypeArray)
@@ -36,6 +36,23 @@ func (w *Writer) WriteCommand(args ...string) (err error) {
 		w.WriteString(strconv.Itoa(len(arg)))
 		w.Write(CRLFByte)
 		w.WriteString(arg)
+		w.Write(CRLFByte)
+	}
+	return w.Flush()
+}
+
+// WriteByteCommand writes a redis command in bytes.
+func (w *Writer) WriteByteCommand(args ...[]byte) (err error) {
+	// write the array flag
+	w.WriteByte(TypeArray)
+	w.WriteString(strconv.Itoa(len(args)))
+	w.Write(CRLFByte)
+	// write blobstring
+	for _, arg := range args {
+		w.WriteByte(TypeBlobString)
+		w.WriteString(strconv.Itoa(len(arg)))
+		w.Write(CRLFByte)
+		w.Write(arg)
 		w.Write(CRLFByte)
 	}
 	return w.Flush()
