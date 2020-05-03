@@ -82,10 +82,6 @@ func TestReader_IT_Tracking(t *testing.T) {
 		w := NewWriter(conn)
 		r := NewReader(conn)
 
-		//  uint64_t hash = crc64(0,(unsigned char*)sdskey,sdslen(sdskey))&(TRACKING_TABLE_SIZE-1);
-		hash := crc64([]byte("a"), 1) & (TRACKING_TABLE_SIZE - 1)
-		t.Logf("calculated hash: %d", hash)
-
 		for i := 0; i < 10; i++ {
 			//PUBLISH
 			w.WriteCommand("set", "a", strconv.Itoa(i))
