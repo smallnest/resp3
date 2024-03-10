@@ -225,3 +225,78 @@ func (r *Value) toRESP3String(buf *strings.Builder) {
 
 	buf.Write(CRLFByte)
 }
+
+// NewBlobStringValue make a value with type BlobString
+func NewBlobStringValue(s string) *Value {
+	return &Value{Type: TypeBlobString, Str: s}
+}
+
+// NewSimpleStringValue make a value with type SimpleString
+func NewSimpleStringValue(s string) *Value {
+	return &Value{Type: TypeSimpleString, Str: s}
+}
+
+// NewSimpleErrorValue make a value with type SimpleError
+func NewSimpleErrorValue(err error) *Value {
+	return &Value{Type: TypeSimpleError, Err: err.Error()}
+}
+
+// NewNumberValue make a value with type Number
+func NewNumberValue(integer int64) *Value {
+	return &Value{Type: TypeNumber, Integer: integer}
+}
+
+// NewNullValue make a value with type Null
+func NewNullValue() *Value {
+	return &Value{Type: TypeNull}
+}
+
+// NewDoubleValue make a value with type Double
+func NewDoubleValue(double float64) *Value {
+	return &Value{Type: TypeDouble, Double: double}
+}
+
+// NewBooleanValue make a value with type Boolean
+func NewBooleanValue(boolean bool) *Value {
+	return &Value{Type: TypeBoolean, Boolean: boolean}
+}
+
+// NewBlobErrorValue make a value with type BlobError
+func NewBlobErrorValue(err error) *Value {
+	return &Value{Type: TypeBlobError, Err: err.Error()}
+}
+
+// NewVerbatimStringValue make a value with type VerbatimString
+func NewVerbatimStringValue(str string, fmt string) *Value {
+	return &Value{Type: TypeVerbatimString, Str: str, StrFmt: fmt}
+}
+
+// NewBigNumberValue make a value with type BigNumber
+func NewBigNumberValue(bigInt *big.Int) *Value {
+	return &Value{Type: TypeBigNumber, BigInt: bigInt}
+}
+
+// NewArrayValue make a value with type Array
+func NewArrayValue(elems []*Value) *Value {
+	return &Value{Type: TypeArray, Elems: elems}
+}
+
+// NewMapValue make a value with type Map
+func NewMapValue(kv *linkedhashmap.Map) *Value {
+	return &Value{Type: TypeMap, KV: kv}
+}
+
+// NewSetValue make a value with type Set
+func NewSetValue(elems []*Value) *Value {
+	return &Value{Type: TypeSet, Elems: elems}
+}
+
+// NewAttributeValue make a value with type Attribute
+func NewAttributeValue(attrs *linkedhashmap.Map) *Value {
+	return &Value{Type: TypeAttribute, Attrs: attrs}
+}
+
+// NewPushValue make a value with type Push
+func NewPushValue(elems []*Value) *Value {
+	return &Value{Type: TypePush, Elems: elems}
+}
