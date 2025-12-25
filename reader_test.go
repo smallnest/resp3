@@ -2,6 +2,7 @@ package resp3
 
 import (
 	"bytes"
+	"errors"
 	"math"
 	"testing"
 )
@@ -64,6 +65,20 @@ func TestReader_Error(t *testing.T) {
 	if v.Err != "SYNTAX invalid syntax" {
 		t.Errorf("not expected, got %s", v.Err)
 	}
+
+	buf.Reset()
+	buf.WriteString("=-1\r\n")
+	v, marker, err = reader.ReadValue()
+	if !errors.Is(err, ErrInvalidSyntax) {
+		t.Error("expected ErrInvalidSyntax")
+	}
+
+	buf.Reset()
+	buf.WriteString("!-1\r\n")
+	v, marker, err = reader.ReadValue()
+	if !errors.Is(err, ErrInvalidSyntax) {
+		t.Error("expected ErrInvalidSyntax")
+	}
 }
 
 func TestReader_Number(t *testing.T) {
@@ -108,6 +123,7 @@ func TestReader_Double(t *testing.T) {
 		t.Errorf("not expected, got %v", v.Double)
 	}
 }
+
 func TestReader_Null(t *testing.T) {
 	buf := bytes.NewBuffer(nil)
 	reader := NewReader(buf)
@@ -115,6 +131,20 @@ func TestReader_Null(t *testing.T) {
 	_, marker, err := reader.ReadValue()
 	if err = isError(err, marker); err != nil {
 		t.Errorf("failed to read: %v", err)
+	}
+
+	// null bulk string
+	buf.Reset()
+	buf.WriteString("$-1\r\n")
+	v, marker, err := reader.ReadValue()
+	if err = isError(err, marker); err != nil {
+		t.Errorf("failed to read: %v", err)
+	}
+	if v.Str != "" {
+		t.Errorf("not expected, got %s", v.Str)
+	}
+	if !v.NullBulkString {
+		t.Error("the null bulk string is expected to be true")
 	}
 }
 

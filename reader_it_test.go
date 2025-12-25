@@ -28,6 +28,16 @@ func TestReader_IT_Test(t *testing.T) {
 		t.Fatalf("expect an error but got %+v", helloErrorResp)
 	}
 
+	// get a non-existing value with RESP2 to test null bulk string
+	w.WriteCommand("GET", "NON_EXIST")
+	resp, _, err := r.ReadValue()
+	if err != nil {
+		t.Fatalf("failed to GET")
+	}
+	if resp.SmartResult() != nil {
+		t.Fatalf("expect get nil but got %+v", resp)
+	}
+
 	// send protocol version 3, get a map result
 	w.WriteCommand("HELLO", "3")
 	helloResp, _, err := r.ReadValue()
@@ -41,7 +51,7 @@ func TestReader_IT_Test(t *testing.T) {
 
 	// set and get
 	w.WriteCommand("SET", "A", "123")
-	resp, _, err := r.ReadValue()
+	resp, _, err = r.ReadValue()
 	if err != nil {
 		t.Fatalf("failed to SET")
 	}
