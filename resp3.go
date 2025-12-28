@@ -55,18 +55,19 @@ const (
 // There is no exact field for NULL type because the type field is enough.
 // It is not used for Stream type.
 type Value struct {
-	Type         byte
-	Str          string
-	StrFmt       string
-	Err          string
-	Integer      int64
-	Boolean      bool
-	Double       float64
-	BigInt       *big.Int
-	Elems        []*Value           // for array & set
-	KV           *linkedhashmap.Map //TODO sorted map, for map & attr
-	Attrs        *linkedhashmap.Map
-	StreamMarker string
+	Type           byte
+	Str            string
+	StrFmt         string
+	Err            string
+	Integer        int64
+	Boolean        bool
+	Double         float64
+	BigInt         *big.Int
+	Elems          []*Value           // for array & set
+	KV             *linkedhashmap.Map //TODO sorted map, for map & attr
+	Attrs          *linkedhashmap.Map
+	StreamMarker   string
+	NullBulkString bool
 }
 
 // SmartResult converts itself to a real object.
@@ -88,6 +89,9 @@ func (r *Value) SmartResult() interface{} {
 	case TypeSimpleString:
 		return r.Str
 	case TypeBlobString:
+		if r.NullBulkString {
+			return nil
+		}
 		return r.Str
 	case TypeVerbatimString:
 		return r.Str
@@ -154,9 +158,13 @@ func (r *Value) toRESP3String(buf *strings.Builder) {
 	case TypeSimpleString:
 		buf.WriteString(r.Str)
 	case TypeBlobString:
-		buf.WriteString(strconv.Itoa(len(r.Str)))
-		buf.Write(CRLFByte)
-		buf.WriteString(r.Str)
+		if r.NullBulkString {
+			buf.WriteString("-1")
+		} else {
+			buf.WriteString(strconv.Itoa(len(r.Str)))
+			buf.Write(CRLFByte)
+			buf.WriteString(r.Str)
+		}
 	case TypeVerbatimString:
 		buf.WriteString(strconv.Itoa(len(r.Str) + 4))
 		buf.Write(CRLFByte)

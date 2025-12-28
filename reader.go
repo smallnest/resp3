@@ -70,22 +70,39 @@ func (r *Reader) ReadValue() (*Value, []byte, error) {
 	case TypeSimpleString:
 		v.Str = string(line[1 : len(line)-2])
 	case TypeBlobString:
-		v.Str, err = r.readBlobString(line)
-	case TypeVerbatimString:
-		var s string
-		s, err = r.readBlobString(line)
+		s, err := r.readBlobString(line)
 		if err == nil {
-			if len(s) < 4 {
+			if s == nil {
+				v.NullBulkString = true
+			} else {
+				v.Str = *s
+			}
+		}
+	case TypeVerbatimString:
+		var s *string
+		s, err = r.readBlobString(line)
+		if s == nil {
+			// null bulk string is only possible for bulk string
+			return nil, nil, ErrInvalidSyntax
+		}
+		if err == nil {
+			if len(*s) < 4 {
 				err = ErrInvalidSyntax
 			} else {
-				v.Str = s[4:]
-				v.StrFmt = s[:3]
+				v.Str = (*s)[4:]
+				v.StrFmt = (*s)[:3]
 			}
 		}
 	case TypeSimpleError:
 		v.Err = string(line[1 : len(line)-2])
 	case TypeBlobError:
-		v.Err, err = r.readBlobString(line)
+		var s *string
+		s, err = r.readBlobString(line)
+		if s == nil {
+			// null bulk string is only possible for bulk string
+			return nil, nil, ErrInvalidSyntax
+		}
+		v.Err = *s
 	case TypeNumber:
 		v.Integer, err = r.readNumber(line)
 	case TypeDouble:
@@ -123,21 +140,27 @@ func (r *Reader) getCount(line []byte) (int, error) {
 	return strconv.Atoi(string(line[1:end]))
 }
 
-func (r *Reader) readBlobString(line []byte) (string, error) {
+func (r *Reader) readBlobString(line []byte) (*string, error) {
 	count, err := r.getCount(line)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	if count == -1 {
+		// for the null bulk string special case:
+		// https://redis.io/docs/latest/develop/reference/protocol-spec/#null-bulk-strings
+		return nil, nil
 	}
 	if count < 0 {
-		return "", ErrInvalidSyntax
+		return nil, ErrInvalidSyntax
 	}
 
 	buf := make([]byte, count+2)
 	_, err = io.ReadFull(r, buf)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(buf[:count]), nil
+	str := string(buf[:count])
+	return &str, nil
 }
 
 func (r *Reader) readNumber(line []byte) (int64, error) {

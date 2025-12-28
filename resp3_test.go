@@ -84,9 +84,18 @@ func TestNull(t *testing.T) {
 	v := &Value{
 		Type: TypeNull,
 	}
-
 	s := v.ToRESP3String()
 	expected := "_\r\n"
+	if s != expected {
+		t.Errorf("expected %s but got %s", expected, s)
+	}
+
+	v = &Value{
+		Type:           TypeBlobString,
+		NullBulkString: true,
+	}
+	s = v.ToRESP3String()
+	expected = "$-1\r\n"
 	if s != expected {
 		t.Errorf("expected %s but got %s", expected, s)
 	}
